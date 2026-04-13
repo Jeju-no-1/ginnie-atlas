@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ginnie Atlas</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,800;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#08112a;--ink2:#0f1e42;--ink3:#162550;--gold:#c8a84b;--gold2:#dfc06e;--gold3:#f0d88a;--goldpale:#f9f1d8;--cream:#faf8f3;--cream2:#f2ede1;--sand:#e8e0cc;--muted:#6b7a99;--dimmed:#a0aec0;--white:#fff;--success:#1a7f4e}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);overflow-x:hidden}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--sand);border-radius:10px}
+.scr{display:none;min-height:100vh}.scr.on{display:block}
+#sLogin{display:none;min-height:100vh;background:var(--ink)}
+#sLogin.on{display:flex;align-items:center;justify-content:center}
+.login-bg{position:fixed;inset:0;background:var(--ink);z-index:0;overflow:hidden}
+.login-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(200,168,75,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(200,168,75,.07) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%)}
+.login-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(200,168,75,.12) 0%,transparent 70%);pointer-events:none}
+.login-wrap{position:relative;z-index:1;width:100%;max-width:480px;padding:24px}
+.login-mark{text-align:center;margin-bottom:40px}
+.login-emblem{width:68px;height:68px;margin:0 auto 18px;background:linear-gradient(135deg,var(--gold),var(--gold3));border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 8px 32px rgba(200,168,75,.3);animation:ein .8s cubic-bezier(.16,1,.3,1) both}
+@keyframes ein{from{opacity:0;transform:translateY(20px) scale(.9)}to{opacity:1;transform:none}}
+.login-title{font-family:'Playfair Display',serif;font-size:38px;font-weight:800;color:var(--white);letter-spacing:-.02em;animation:fup .8s .1s cubic-bezier(.16,1,.3,1) both}
+.login-title em{color:var(--gold);font-style:normal}
+.login-sub{margin-top:8px;font-size:12px;color:rgba(255,255,255,.35);letter-spacing:.12em;text-transform:uppercase;animation:fup .8s .2s cubic-bezier(.16,1,.3,1) both}
+@keyframes fup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.login-panel{background:rgba(255,255,255,.04);border:1px solid rgba(200,168,75,.18);border-radius:16px;padding:32px;backdrop-filter:blur(20px);animation:fup .8s .3s cubic-bezier(.16,1,.3,1) both}
+.login-opt{width:100%;text-align:left;background:transparent;border:1px solid rgba(200,168,75,.18);border-radius:10px;padding:18px 20px;cursor:pointer;transition:all .25s;display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.login-opt:last-child{margin-bottom:0}
+.login-opt:hover{background:rgba(200,168,75,.08);border-color:var(--gold);transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,168,75,.12)}
+.login-opt-icon{width:40px;height:40px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px}
+.opt-t{background:rgba(200,168,75,.15)}.opt-s{background:rgba(22,37,80,.6);border:1px solid rgba(200,168,75,.2)}
+.login-opt-name{font-size:15px;font-weight:500;color:var(--white);margin-bottom:2px}
+.login-opt-desc{font-size:12px;color:rgba(255,255,255,.35)}
+.li{background:rgba(255,255,255,.07);border:1px solid rgba(200,168,75,.22);border-radius:8px;padding:12px 15px;font-size:14px;color:var(--white);width:100%;font-family:'DM Sans',sans-serif;outline:none;transition:all .2s;margin-bottom:10px}
+.li::placeholder{color:rgba(255,255,255,.25)}
+.li:focus{border-color:var(--gold);background:rgba(255,255,255,.1);box-shadow:0 0 0 3px rgba(200,168,75,.1)}
+.ll{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px;display:block}
+.lhint{font-size:11px;color:rgba(255,255,255,.25);margin-bottom:14px}
+.lerr{font-size:12px;color:#f87171;min-height:18px;margin-bottom:10px}
+.lrow{display:flex;gap:8px}
+.bbk{background:transparent;border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:11px 16px;color:rgba(255,255,255,.4);font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;flex:1}
+.bbk:hover{border-color:rgba(255,255,255,.3);color:rgba(255,255,255,.7)}
+.bent{flex:2;background:var(--gold);color:var(--ink);border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .25s;box-shadow:0 4px 16px rgba(200,168,75,.3)}
+.bent:hover{background:var(--gold2);transform:translateY(-1px)}
+.bent:disabled{opacity:.5;cursor:not-allowed;transform:none}
+/* INVITE CODE INPUT */
+.code-input-wrap{display:flex;gap:8px;margin-bottom:10px}
+.code-input{background:rgba(255,255,255,.07);border:1px solid rgba(200,168,75,.22);border-radius:8px;padding:12px;font-size:20px;font-weight:600;color:var(--white);width:100%;font-family:'DM Sans',sans-serif;outline:none;text-align:center;letter-spacing:.2em;text-transform:uppercase;transition:all .2s}
+.code-input:focus{border-color:var(--gold);background:rgba(255,255,255,.1)}
+/* TOPBAR */
+.topbar{background:var(--ink);border-bottom:1px solid rgba(200,168,75,.18);position:sticky;top:0;z-index:200;height:58px;display:flex;align-items:center;padding:0 24px;gap:16px}
+.tb-logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--white);display:flex;align-items:center;gap:9px;flex-shrink:0}
+.tb-logo em{color:var(--gold);font-style:normal}
+.tb-dot{width:30px;height:30px;background:linear-gradient(135deg,var(--gold),var(--gold3));border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.tb-div{width:1px;height:20px;background:rgba(255,255,255,.1)}
+.tb-badge{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:20px;background:rgba(200,168,75,.15);color:var(--gold)}
+.tb-tabs{display:flex;flex:1;height:58px;overflow-x:auto}.tb-tabs::-webkit-scrollbar{display:none}
+.tb-tab{padding:0 16px;height:58px;line-height:58px;font-size:13px;color:rgba(255,255,255,.45);border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;font-family:'DM Sans',sans-serif;transition:all .15s}
+.tb-tab.on{color:var(--gold);border-bottom-color:var(--gold);font-weight:500}
+.tb-tab:hover:not(.on){color:rgba(255,255,255,.75)}
+.tb-user{font-size:13px;color:rgba(255,255,255,.4);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.tb-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--ink3),var(--ink2));border:1px solid rgba(200,168,75,.3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--gold)}
+.btn-lo{background:transparent;border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:5px 12px;color:rgba(255,255,255,.4);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-lo:hover{border-color:rgba(255,255,255,.3);color:rgba(255,255,255,.7)}
+/* MAIN */
+.main{max-width:900px;margin:0 auto;padding:32px 24px}
+.slbl{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+/* CARD */
+.card{background:var(--white);border:1px solid var(--sand);border-radius:12px;padding:26px;margin-bottom:18px}
+.tag{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;display:inline-block}
+.tg{background:var(--goldpale);color:#7a5a0a}.tn{background:var(--ink);color:var(--gold)}.ts{background:#e6f4ed;color:var(--success)}.tb2{background:#e8f0fe;color:#1a56db}
+/* INVITE CODE DISPLAY */
+.code-display{background:linear-gradient(135deg,var(--ink),var(--ink2));border:1px solid rgba(200,168,75,.3);border-radius:12px;padding:24px;text-align:center;margin-bottom:18px}
+.code-display-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:10px}
+.code-display-code{font-size:36px;font-weight:700;color:var(--gold);letter-spacing:.25em;font-family:'Playfair Display',serif;margin-bottom:10px}
+.code-display-hint{font-size:12px;color:rgba(255,255,255,.35)}
+.copy-btn{background:rgba(200,168,75,.15);border:1px solid rgba(200,168,75,.3);border-radius:6px;padding:6px 16px;color:var(--gold);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:12px;transition:all .2s}
+.copy-btn:hover{background:rgba(200,168,75,.25)}
+/* BUTTONS */
+.bp{background:var(--ink);color:var(--gold);border:1px solid rgba(200,168,75,.3);border-radius:8px;padding:10px 22px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .25s;display:inline-flex;align-items:center;gap:8px}
+.bp:hover{background:var(--ink2);box-shadow:0 4px 16px rgba(8,17,42,.2)}
+.bp:disabled{opacity:.5;cursor:not-allowed}
+.bg{background:var(--gold);color:var(--ink);border:none;border-radius:8px;padding:10px 22px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .25s;display:inline-flex;align-items:center;gap:8px}
+.bg:hover{background:var(--gold2);transform:translateY(-1px)}
+.bg:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.bg.done{background:var(--success);color:#fff}
+.bsm{padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;border:1px solid var(--sand);background:var(--white);color:var(--muted)}
+.bsm:hover{border-color:var(--ink);color:var(--ink)}
+.bsm.on{background:var(--ink);color:var(--gold);border-color:var(--ink)}
+/* SPINNER */
+.sp{width:18px;height:18px;border:2px solid rgba(200,168,75,.3);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;display:inline-block;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* ARTICLE */
+.art-body{background:var(--white);border:1px solid var(--sand);border-radius:12px;padding:32px;margin-bottom:18px}
+.art-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;line-height:1.3;color:var(--ink);margin-bottom:20px}
+.art-para{font-size:15px;line-height:1.9;color:#1a2844;margin-bottom:18px;font-weight:300}
+.art-sum{margin-top:18px;padding:16px 20px;background:var(--goldpale);border-radius:8px;border-left:3px solid var(--gold)}
+.art-sum strong{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:600;display:block;margin-bottom:5px}
+.art-sum p{font-size:13px;line-height:1.7;color:#5a3e08}
+/* VOCAB */
+.vc{background:var(--white);border:1px solid var(--sand);border-radius:10px;padding:22px;margin-bottom:12px}
+.vnum{width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--gold);font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.vword{font-family:'Playfair Display',serif;font-size:21px;font-weight:700}
+.vsent{font-size:13px;font-style:italic;color:var(--muted);line-height:1.7;padding-left:12px;border-left:2px solid var(--gold);margin-bottom:8px}
+.vhint{font-size:13px;color:var(--gold);margin-bottom:12px}
+.qst{font-size:13px;font-weight:500;margin-bottom:10px}
+.qch{padding:10px 13px;margin-bottom:6px;border-radius:7px;cursor:pointer;font-size:13px;border:1px solid var(--sand);transition:all .2s;line-height:1.5}
+.qch:hover{border-color:var(--ink2)}
+.qch.ok{background:#e8f5ee;border-color:#2d7a4f;color:var(--success)}
+.qch.no{background:#fee;border-color:#c0392b;color:#c0392b}
+.qex{margin-top:8px;padding:12px;background:var(--goldpale);border-radius:7px;font-size:13px;line-height:1.7;color:#5a3e08}
+/* SAT */
+.sc{background:var(--white);border:1px solid var(--sand);border-radius:10px;padding:24px;margin-bottom:12px;border-top:3px solid var(--ink)}
+.stype{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:3px 11px;border-radius:20px;display:inline-block;margin-bottom:12px}
+.mp{background:#4f46e5;color:#fff}.ts2{background:#0891b2;color:#fff}.to{background:#db2777;color:#fff}.ce{background:#d97706;color:#fff}
+.sstem{font-size:14px;font-weight:500;line-height:1.7;margin-bottom:14px}
+.wt{margin-top:12px;display:grid;gap:8px}
+.wp2{padding:10px 13px;border-radius:8px;background:var(--cream);border:1px solid var(--sand);font-size:12px;line-height:1.6}
+.wp2 strong{display:block;margin-bottom:2px;font-size:11px;font-weight:600}
+/* THINK */
+.tc2{background:var(--white);border:1px solid var(--sand);border-radius:10px;padding:24px;margin-bottom:12px}
+.tqn{width:27px;height:27px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:center}
+.tq{font-size:14px;font-weight:500;line-height:1.6}
+.tfb{margin-top:12px;padding:16px;background:var(--goldpale);border-radius:8px;border:1px solid rgba(200,168,75,.3)}
+.tfb strong{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:600;display:block;margin-bottom:6px}
+.tfb p{font-size:13px;line-height:1.8;color:#4a3005}
+/* CHUNK */
+.cp{background:var(--white);border:1px solid var(--sand);border-radius:10px;padding:22px;margin-bottom:12px}
+.clbl{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+.crow{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:10px 0;border-bottom:1px solid var(--sand);align-items:start}
+.crow:last-child{border-bottom:none}
+.cen{font-size:14px;font-weight:500;line-height:1.7}
+.cnote{font-size:11px;color:var(--gold);margin-top:3px;font-style:italic}
+.cko{font-size:13px;line-height:1.7;color:var(--muted)}
+/* WRITING */
+.wp3{background:var(--white);border:1px solid var(--sand);border-radius:12px;padding:26px;margin-bottom:14px}
+.wtopic{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;line-height:1.5;margin-bottom:16px}
+.wpos{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.wpc{padding:14px;border-radius:8px}
+.wpc.for{background:#edfaf4;border:1px solid #b2e9cc}
+.wpc.ag{background:#fef2f2;border:1px solid #fdd}
+.wpl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;display:block}
+.wpc.for .wpl{color:#1a7f4e}.wpc.ag .wpl{color:#c0392b}
+.wpt{font-size:13px;line-height:1.6}
+.wpc.for .wpt{color:#14532d}.wpc.ag .wpt{color:#7f1d1d}
+.wfb{padding:20px;background:var(--goldpale);border-radius:10px;border:1px solid rgba(200,168,75,.3);margin-top:14px}
+.wfb strong{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:600;display:block;margin-bottom:8px}
+.wfb p{font-size:13px;line-height:1.8;color:#4a3005}
+/* RECORDS */
+.rc{background:var(--white);border:1px solid var(--sand);border-radius:10px;padding:18px 20px;margin-bottom:8px;cursor:pointer;transition:all .2s}
+.rc:hover{border-color:var(--gold)}
+.rb{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--sand)}
+.rb.open{display:block}
+.rlbl{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;margin-top:12px}
+.rlbl:first-child{margin-top:0}
+.rans{font-size:13px;line-height:1.7;background:var(--cream);border-radius:8px;padding:12px;border:1px solid var(--sand)}
+.rfb{font-size:13px;line-height:1.8;background:var(--goldpale);border-radius:8px;padding:12px;border:1px solid rgba(200,168,75,.25);color:#5a3e08}
+/* ARTICLE LIST */
+.ali{background:var(--white);border:1px solid var(--sand);border-radius:10px;padding:16px 20px;margin-bottom:8px;display:flex;align-items:center;gap:12px;transition:all .2s}
+.ali:hover{border-color:rgba(200,168,75,.4)}
+.ali.act{border-color:var(--success);background:#f0fff8}
+.aln{width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--gold);font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(8,17,42,.75);z-index:500;display:flex;align-items:center;justify-content:center;padding:24px}
+.md{background:var(--white);border-radius:14px;padding:28px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto}
+.mdtit{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;margin-bottom:20px}
+.mdft{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:18px;border-top:1px solid var(--sand)}
+.fl{display:flex}.g8{gap:8px}.g12{gap:12px}.g16{gap:16px}.ic{align-items:center}.jb{justify-content:space-between}
+input,textarea,select{font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--white);border:1px solid var(--sand);border-radius:8px;padding:10px 13px;width:100%;outline:none;transition:border-color .2s;margin-bottom:12px}
+input:focus,textarea:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,168,75,.1)}
+textarea{resize:vertical;line-height:1.7}
+label{font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px;display:block}
+.empty{text-align:center;padding:60px 20px;color:var(--dimmed)}
+#sLoading{display:none;min-height:100vh;background:var(--ink);align-items:center;justify-content:center;flex-direction:column}
+#sLoading.on{display:flex}
+.lsp{width:52px;height:52px;border:2px solid rgba(200,168,75,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .9s linear infinite;margin-bottom:22px}
+@media(max-width:640px){.main{padding:18px 14px}.topbar{padding:0 14px}.crow{grid-template-columns:1fr}.wpos{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="sLoading" class="scr">
+  <div style="text-align:center">
+    <div class="lsp"></div>
+    <p style="font-size:15px;font-weight:500;color:var(--white);margin-bottom:6px" id="lmsg">처리 중...</p>
+    <p style="font-size:12px;color:rgba(255,255,255,.35);letter-spacing:.05em">Ginnie Atlas</p>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div id="sLogin" class="scr">
+  <div class="login-bg"><div class="login-grid"></div><div class="login-glow"></div></div>
+  <div class="login-wrap">
+    <div class="login-mark">
+      <div class="login-emblem">🌍</div>
+      <h1 class="login-title">Ginnie <em>Atlas</em></h1>
+      <p class="login-sub">Intelligent Reading Platform</p>
+    </div>
+    <div class="login-panel">
+      <div id="lHome">
+        <button class="login-opt" onclick="sf('teacher')">
+          <div class="login-opt-icon opt-t">🎓</div>
+          <div><div class="login-opt-name">교사로 입장</div><div class="login-opt-desc">지문 관리 · 초대 코드 · 학생 기록</div></div>
+        </button>
+        <button class="login-opt" onclick="sf('student')">
+          <div class="login-opt-icon opt-s">👤</div>
+          <div><div class="login-opt-name">학생으로 입장</div><div class="login-opt-desc">초대 코드로 입장 · SAT 학습 · AI 피드백</div></div>
+        </button>
+      </div>
+      <div id="lTeacher" style="display:none">
+        <label class="ll">이메일</label>
+        <input class="li" type="email" id="tEm" placeholder="teacher@academy.com">
+        <label class="ll">비밀번호</label>
+        <input class="li" type="password" id="tPw" placeholder="6자 이상" onkeydown="if(event.key==='Enter')dl('teacher')">
+        <div class="lhint">처음 입장 시 계정이 자동 생성됩니다</div>
+        <div class="lerr" id="tErr"></div>
+        <div class="lrow">
+          <button class="bbk" onclick="sf(null)">← 뒤로</button>
+          <button class="bent" id="tBtn" onclick="dl('teacher')">입장하기</button>
+        </div>
+      </div>
+      <div id="lStudent" style="display:none">
+        <label class="ll">이름</label>
+        <input class="li" type="text" id="sName" placeholder="예: 김지은">
+        <label class="ll">이메일</label>
+        <input class="li" type="email" id="sEm" placeholder="student@email.com">
+        <label class="ll">비밀번호</label>
+        <input class="li" type="password" id="sPw" placeholder="6자 이상">
+        <label class="ll">초대 코드</label>
+        <input class="li code-input" type="text" id="sCode" placeholder="ATLAS7" maxlength="6" style="text-align:center;letter-spacing:.2em;font-size:20px;font-weight:600;text-transform:uppercase" onkeydown="if(event.key==='Enter')dl('student')">
+        <div class="lhint">교사에게 받은 6자리 코드를 입력하세요</div>
+        <div class="lerr" id="sErr"></div>
+        <div class="lrow">
+          <button class="bbk" onclick="sf(null)">← 뒤로</button>
+          <button class="bent" id="sBtn" onclick="dl('student')">입장하기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TEACHER -->
+<div id="sTeacher" class="scr">
+  <nav class="topbar">
+    <div class="tb-logo"><div class="tb-dot">🌍</div>Ginnie <em>Atlas</em></div>
+    <div class="tb-div"></div>
+    <div class="tb-tabs">
+      <button class="tb-tab on" onclick="tt(this,'tA')">지문 관리</button>
+      <button class="tb-tab" onclick="tt(this,'tS')">학생 관리</button>
+      <button class="tb-tab" onclick="tt(this,'tR')">학습 기록 <span id="rBadge"></span></button>
+      <button class="tb-tab" onclick="tt(this,'tC')">초대 코드</button>
+    </div>
+    <div class="tb-user">
+      <div class="tb-av" id="tAv">T</div>
+      <span id="tNm" style="max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px"></span>
+      <button class="btn-lo" onclick="lo()">로그아웃</button>
+    </div>
+  </nav>
+  <div id="tA" class="main"></div>
+  <div id="tS" class="main" style="display:none"></div>
+  <div id="tR" class="main" style="display:none"></div>
+  <div id="tC" class="main" style="display:none"></div>
+</div>
+
+<!-- STUDENT -->
+<div id="sStudent" class="scr">
+  <nav class="topbar">
+    <div class="tb-logo"><div class="tb-dot">🌍</div>Ginnie <em>Atlas</em></div>
+    <div class="tb-div"></div>
+    <span class="tb-badge" id="sBadge">G9</span>
+    <div class="tb-div"></div>
+    <div class="tb-tabs">
+      <button class="tb-tab on" onclick="st(this,'sR')">지문</button>
+      <button class="tb-tab" onclick="st(this,'sV')">어휘</button>
+      <button class="tb-tab" onclick="st(this,'sSAT')">SAT</button>
+      <button class="tb-tab" onclick="st(this,'sTH')">사고력</button>
+      <button class="tb-tab" onclick="st(this,'sCH')">직독직해</button>
+      <button class="tb-tab" onclick="st(this,'sW')">Writing</button>
+    </div>
+    <div class="tb-user">
+      <div class="tb-av" id="sAv">S</div>
+      <span id="sNm" style="font-size:12px"></span>
+      <button class="btn-lo" onclick="lo()">로그아웃</button>
+    </div>
+  </nav>
+  <div id="sR" class="main" style="display:none"></div>
+  <div id="sV" class="main" style="display:none"></div>
+  <div id="sSAT" class="main" style="display:none"></div>
+  <div id="sTH" class="main" style="display:none"></div>
+  <div id="sCH" class="main" style="display:none"></div>
+  <div id="sW" class="main" style="display:none"></div>
+  <div id="sNA" class="main" style="display:none;text-align:center;padding:80px 20px">
+    <div style="font-size:44px;margin-bottom:14px">⏳</div>
+    <p style="font-family:'Playfair Display',serif;font-size:19px;font-weight:600;margin-bottom:6px">학습 자료 준비 중</p>
+    <p style="font-size:13px;color:var(--muted)">교사가 아직 지문을 등록하지 않았습니다.</p>
+  </div>
+</div>
+
+<!-- ADD ARTICLE MODAL -->
+<div id="mArt" class="mo" style="display:none">
+  <div class="md">
+    <h2 class="mdtit">새 지문 추가</h2>
+    <label>지문 제목</label>
+    <input type="text" id="mTit" placeholder="예: NATO Crisis — Week 1">
+    <label>출처</label>
+    <input type="text" id="mSrc" placeholder="예: The Economist">
+    <label>레벨</label>
+    <select id="mLv">
+      <option>G7 · L1</option><option>G8 · L2</option>
+      <option selected>G9 · L3</option><option>G10 · L4</option><option>G11 · L5</option>
+    </select>
+    <label>지문 본문</label>
+    <textarea id="mTxt" rows="7" placeholder="기사 본문을 붙여넣으세요..."></textarea>
+    <div id="mErr" style="font-size:12px;color:#c0392b;margin-bottom:10px"></div>
+    <div class="mdft">
+      <button class="bsm" onclick="cm()">취소</button>
+      <button class="bp" id="mSv" onclick="saveArt()">✦ 커리큘럼 자동 생성 & 저장</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, updateDoc, query, orderBy, where, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+const FC = {
+  apiKey:"AIzaSyBMHGlkW4YcjJMnnYcsvO0_SADsz89nhSM",
+  authDomain:"ginnie-atlas.firebaseapp.com",
+  projectId:"ginnie-atlas",
+  storageBucket:"ginnie-atlas.firebasestorage.app",
+  messagingSenderId:"254751530028",
+  appId:"1:254751530028:web:6fb222a86c691a29304589"
+};
+const app = initializeApp(FC);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ── PROMPTS ──
+const CSYS = `You are an expert English education AI for Korean students. Generate structured SAT learning materials as valid JSON. Be precise — no hallucination, follow schema exactly.
+
+Schema:
+{
+  "article_title":"string",
+  "article_summary":"Korean 2-sentence summary",
+  "vocabulary":[{"word":"string","original_sentence":"exact sentence from article","context_clue_prompt":"Korean hint","definition":"English definition","question":{"stem":"As used in the passage, the word ___ most nearly means","choices":["A) ...","B) ...","C) ...","D) ..."],"answer":"A/B/C/D","explanation":"Korean"}}],
+  "critical_thinking":[{"question":"English Socratic question","guide":"Korean teacher guide","rubric":{"excellent":"Korean","adequate":"Korean","needs_work":"Korean"}}],
+  "sat_questions":[{"type":"Main Purpose","stem":"string","choices":["A) ...","B) ...","C) ...","D) ..."],"answer":"A/B/C/D","explanation":"Korean","wrong_answer_types":{"too_narrow":"Korean","too_broad":"Korean","distortion":"Korean"}}],
+  "chunk_reading":[{"paragraph_number":1,"chunks":[{"english":"string","korean":"natural Korean","grammar_note":"string"}]}],
+  "writing_prompt":{"topic":"string","position_to_argue":"string","counter_position":"string","rubric":{"thesis":"Korean","evidence":"Korean","structure":"Korean"}}
+}
+Rules: exactly 6 vocabulary words, 3 SAT questions (Main Purpose, Text Structure, Tone), 3 critical thinking questions, 2 paragraphs chunk reading. RETURN ONLY VALID JSON.`;
+
+const FSYS = `You are a Korean English writing coach. Evaluate using the rubric provided. Never hallucinate — base feedback ONLY on the rubric and student's actual words.
+
+Respond in Korean:
+**강점** — 1-2 specific things from student's actual words
+**발전 포인트** — 1-2 rubric-based gaps with concrete suggestions  
+**다음 질문** — One focused follow-up question
+
+Under 160 words. Direct and specific. Never generic.`;
+
+// ── STATE ──
+let U=null, UD=null, ROLE=null, ART=null, CUR=null, TID=null;
+
+// ── UTILS ──
+function show(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on')}
+function ld(m){document.getElementById('lmsg').textContent=m||'처리 중...';show('sLoading')}
+function genCode(){return Math.random().toString(36).substring(2,5).toUpperCase()+Math.floor(100+Math.random()*900)}
+
+// ── LOGIN ──
+window.sf=t=>{
+  document.getElementById('lHome').style.display=t?'none':'';
+  document.getElementById('lTeacher').style.display=t==='teacher'?'':'none';
+  document.getElementById('lStudent').style.display=t==='student'?'':'none';
+  if(t==='teacher')document.getElementById('tEm').focus();
+  if(t==='student')document.getElementById('sName').focus();
+};
+
+window.dl=async role=>{
+  const isT=role==='teacher';
+  const em=(isT?document.getElementById('tEm'):document.getElementById('sEm')).value.trim();
+  const pw=(isT?document.getElementById('tPw'):document.getElementById('sPw')).value;
+  const errEl=document.getElementById(isT?'tErr':'sErr');
+  const btn=document.getElementById(isT?'tBtn':'sBtn');
+  errEl.textContent='';
+  if(!em||!pw){errEl.textContent='모든 항목을 입력하세요';return}
+
+  // 학생: 초대 코드 먼저 확인
+  if(!isT){
+    const name=document.getElementById('sName').value.trim();
+    const code=document.getElementById('sCode').value.trim().toUpperCase();
+    if(!name){errEl.textContent='이름을 입력하세요';return}
+    if(!code||code.length!==6){errEl.textContent='6자리 초대 코드를 입력하세요';return}
+    const cSnap=await getDocs(query(collection(db,'inviteCodes'),where('code','==',code),where('active','==',true)));
+    if(cSnap.empty){errEl.textContent='유효하지 않은 초대 코드입니다';return}
+    TID=cSnap.docs[0].data().teacherUid;
+  }
+
+  btn.disabled=true;btn.textContent='처리 중...';
+  try{
+    // 로그인 시도
+    let cred;
+    try{
+      cred=await signInWithEmailAndPassword(auth,em,pw);
+      // 기존 유저 — role 확인
+      const snap=await getDoc(doc(db,'users',cred.user.uid));
+      if(snap.exists()&&snap.data().role!==role){
+        await signOut(auth);
+        errEl.textContent=role==='teacher'?'학생 계정입니다. 학생으로 입장하세요':'교사 계정입니다. 교사로 입장하세요';
+        btn.disabled=false;btn.textContent='입장하기';return;
+      }
+    }catch(e){
+      if(e.code==='auth/user-not-found'||e.code==='auth/invalid-credential'){
+        // 교사 신규 가입 차단
+        if(isT){
+          errEl.textContent='등록되지 않은 교사 계정입니다. 관리자에게 문의하세요';
+          btn.disabled=false;btn.textContent='입장하기';return;
+        }
+        // 학생 신규 가입
+        const name=document.getElementById('sName').value.trim();
+        cred=await createUserWithEmailAndPassword(auth,em,pw);
+        await updateProfile(cred.user,{displayName:name});
+        await setDoc(doc(db,'users',cred.user.uid),{
+          email:em,role,displayName:name,teacherUid:TID,level:'G9',createdAt:new Date().toISOString()
+        });
+        if(TID){
+          await setDoc(doc(db,'teachers',TID,'students',cred.user.uid),{
+            email:em,name,level:'G9',registeredAt:new Date().toISOString(),approved:true
+          },{merge:true});
+        }
+      }else throw e;
+    }
+  }catch(e){
+    errEl.textContent=e.code==='auth/wrong-password'||e.code==='auth/invalid-credential'?'비밀번호가 올바르지 않습니다':e.code==='auth/weak-password'?'비밀번호는 6자 이상이어야 합니다':'오류: '+e.message;
+    btn.disabled=false;btn.textContent='입장하기';
+  }
+};
+
+window.lo=async()=>await signOut(auth);
+
+// ── AUTH STATE — 캐시로 속도 개선 ──
+onAuthStateChanged(auth,async user=>{
+  if(!user){U=null;UD=null;ROLE=null;show('sLogin');return}
+  U=user;
+  // displayName이 있으면 Firestore 조회와 병렬 처리
+  const snapPromise=getDoc(doc(db,'users',user.uid));
+  const snap=await snapPromise;
+  if(!snap.exists()){
+    // 교사는 Firebase Console에서 직접 생성 — users doc 없으면 로그아웃
+    await signOut(auth);return;
+  }
+  UD=snap.data();ROLE=UD.role;
+  if(ROLE==='teacher')loadTeacher();
+  else loadStudent();
+});
+
+// ═══════════════════════════════════════════
+// TEACHER
+// ═══════════════════════════════════════════
+async function loadTeacher(){
+  show('sTeacher');
+  const nm=UD.displayName||U.email.split('@')[0];
+  document.getElementById('tNm').textContent=nm;
+  document.getElementById('tAv').textContent=nm.charAt(0).toUpperCase();
+  renderTA();renderTS();renderTR();renderTC();
+}
+window.tt=(btn,id)=>{
+  document.querySelectorAll('#sTeacher .tb-tab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  ['tA','tS','tR','tC'].forEach(s=>document.getElementById(s).style.display=s===id?'':'none');
+};
+
+// Articles tab
+async function renderTA(){
+  const el=document.getElementById('tA');
+  el.innerHTML=`<div class="fl ic jb" style="margin-bottom:16px"><p class="slbl" style="margin:0">지문 목록</p><button class="bp" onclick="om()">+ 새 지문 추가</button></div><div id="aList"><div class="empty">로딩 중...</div></div>`;
+  const q=query(collection(db,'teachers',U.uid,'articles'),orderBy('order','asc'));
+  onSnapshot(q,snap=>{
+    const el2=document.getElementById('aList');
+    if(snap.empty){el2.innerHTML='<div class="empty"><p style="font-size:40px;margin-bottom:10px">📄</p><p>아직 등록된 지문이 없습니다</p><p style="font-size:12px;margin-top:6px">위 버튼으로 첫 지문을 추가하세요</p></div>';return}
+    el2.innerHTML=snap.docs.map((d,i)=>{
+      const a=d.data();
+      return `<div class="ali ${a.active?'act':''}">
+        <div class="aln">${i+1}</div>
+        <div style="flex:1">
+          <p style="font-size:14px;font-weight:500;margin-bottom:2px">${a.title}</p>
+          <p style="font-size:12px;color:var(--dimmed)">${a.source||''} · ${a.level||''}</p>
+        </div>
+        <div class="fl g8 ic">
+          ${a.active?'<span class="tag ts">활성</span>':`<button class="bsm" onclick="actArt('${d.id}')">활성화</button>`}
+          <button class="bsm" style="color:#c0392b;border-color:#fdd" onclick="if(confirm('이 지문을 삭제하시겠습니까?'))delArt('${d.id}')">삭제</button>
+        </div>
+      </div>`;
+    }).join('');
+  });
+}
+
+// Invite Code tab
+async function renderTC(){
+  const el=document.getElementById('tC');
+  // Load existing codes
+  const q=query(collection(db,'inviteCodes'),where('teacherUid','==',U.uid));
+  const snap=await getDocs(q);
+  const codes=snap.docs.map(d=>d.data());
+  const activeCode=codes.find(c=>c.active);
+  el.innerHTML=`
+    <p class="slbl">초대 코드 관리</p>
+    ${activeCode?`
+      <div class="code-display">
+        <p class="code-display-label">현재 활성 초대 코드</p>
+        <p class="code-display-code" id="codeText">${activeCode.code}</p>
+        <p class="code-display-hint">학생에게 이 코드를 공유하세요</p>
+        <button class="copy-btn" onclick="copyCode('${activeCode.code}')">📋 코드 복사</button>
+      </div>`:`<div class="empty" style="padding:40px 20px"><p>아직 활성 코드가 없습니다</p></div>`}
+    <button class="bp" onclick="newCode()" style="margin-top:8px">${activeCode?'새 코드 생성 (기존 무효화)':'초대 코드 생성'}</button>
+    ${codes.length?`
+      <p class="slbl" style="margin-top:24px">코드 이력</p>
+      ${codes.map(c=>`<div class="card" style="padding:14px 18px;margin-bottom:8px">
+        <div class="fl ic jb">
+          <span style="font-size:16px;font-weight:600;letter-spacing:.15em;color:${c.active?'var(--gold)':'var(--dimmed)'}">${c.code}</span>
+          <span class="tag ${c.active?'ts':''}">  ${c.active?'활성':'만료'}</span>
+        </div>
+        <p style="font-size:11px;color:var(--dimmed);margin-top:4px">${c.createdAt?.split('T')[0]||''}</p>
+      </div>`).join('')}`:''}`;
+}
+
+window.newCode=async()=>{
+  ld('초대 코드 생성 중...');
+  // Deactivate old codes
+  const q=query(collection(db,'inviteCodes'),where('teacherUid','==',U.uid),where('active','==',true));
+  const snap=await getDocs(q);
+  for(const d of snap.docs)await updateDoc(doc(db,'inviteCodes',d.id),{active:false});
+  const code=genCode();
+  await addDoc(collection(db,'inviteCodes'),{code,teacherUid:U.uid,active:true,createdAt:new Date().toISOString()});
+  show('sTeacher');renderTC();
+};
+
+window.copyCode=code=>{
+  navigator.clipboard.writeText(code).then(()=>{
+    const btn=event.target;btn.textContent='✓ 복사됨';
+    setTimeout(()=>btn.textContent='📋 코드 복사',2000);
+  });
+};
+
+window.om=()=>document.getElementById('mArt').style.display='flex';
+window.cm=()=>{document.getElementById('mArt').style.display='none';document.getElementById('mErr').textContent=''};
+
+window.saveArt=async()=>{
+  const tit=document.getElementById('mTit').value.trim();
+  const src=document.getElementById('mSrc').value.trim();
+  const lv=document.getElementById('mLv').value;
+  const txt=document.getElementById('mTxt').value.trim();
+  const err=document.getElementById('mErr');
+  const btn=document.getElementById('mSv');
+  if(!tit||!txt){err.textContent='제목과 본문을 입력하세요';return}
+  btn.disabled=true;
+  const msgs=['기사 분석 중...','SAT 어휘 추출 중...','루브릭 설계 중...','사고력 질문 생성 중...','커리큘럼 완성 중...'];
+  let mi=0;ld(msgs[0]);
+  const iv=setInterval(()=>{mi=(mi+1)%msgs.length;document.getElementById('lmsg').textContent=msgs[mi]},2200);
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json','x-api-key':'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','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4096,system:CSYS,
+        messages:[{role:'user',content:`Level: ${lv}\nARTICLE:\n${txt}\nReturn ONLY valid JSON.`}]})
+    });
+    const d=await res.json();
+    const raw=(d.content||[]).filter(b=>b&&b.type==='text').map(b=>b.text).join('');
+    const cur=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    const all=await getDocs(collection(db,'teachers',U.uid,'articles'));
+    const isFirst=all.empty;
+    await addDoc(collection(db,'teachers',U.uid,'articles'),{
+      title:tit,source:src,level:lv,text:txt,curriculum:cur,
+      order:all.size+1,active:isFirst,createdAt:new Date().toISOString()
+    });
+    clearInterval(iv);cm();btn.disabled=false;
+    document.getElementById('mTit').value='';document.getElementById('mSrc').value='';document.getElementById('mTxt').value='';
+    show('sTeacher');
+  }catch(e){
+    clearInterval(iv);err.textContent='오류: '+e.message;btn.disabled=false;
+    show('sTeacher');document.getElementById('mArt').style.display='flex';
+  }
+};
+
+window.actArt=async id=>{
+  const all=await getDocs(collection(db,'teachers',U.uid,'articles'));
+  for(const d of all.docs)await updateDoc(doc(db,'teachers',U.uid,'articles',d.id),{active:false});
+  await updateDoc(doc(db,'teachers',U.uid,'articles',id),{active:true});
+};
+window.delArt=async id=>{
+  const {deleteDoc}=await import("https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js");
+  await deleteDoc(doc(db,'teachers',U.uid,'articles',id));
+};
+
+// Students tab
+async function renderTS(){
+  const el=document.getElementById('tS');
+  el.innerHTML=`<p class="slbl">학생 목록</p><div id="sList"><div class="empty">로딩 중...</div></div>`;
+  onSnapshot(collection(db,'teachers',U.uid,'students'),snap=>{
+    const el2=document.getElementById('sList');
+    if(snap.empty){el2.innerHTML='<div class="empty"><p style="font-size:36px;margin-bottom:10px">👥</p><p>아직 등록된 학생이 없습니다</p><p style="font-size:12px;margin-top:6px">초대 코드를 공유하면 학생이 자동 등록됩니다</p></div>';return}
+    el2.innerHTML=snap.docs.map(d=>{
+      const s=d.data();
+      return `<div class="card" style="padding:16px 20px;margin-bottom:8px">
+        <div class="fl ic jb">
+          <div class="fl ic g12">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0">${(s.name||s.email||'?').charAt(0).toUpperCase()}</div>
+            <div><p style="font-size:14px;font-weight:500">${s.name||s.email}</p><p style="font-size:12px;color:var(--dimmed)">${s.email}</p></div>
+          </div>
+          <div class="fl g8 ic">
+            <select onchange="updLv('${d.id}',this.value)" style="width:auto;padding:5px 10px;font-size:12px;border-radius:6px;margin:0">
+              <option ${s.level==='G7'?'selected':''}>G7</option><option ${s.level==='G8'?'selected':''}>G8</option>
+              <option ${(!s.level||s.level==='G9')?'selected':''}>G9</option><option ${s.level==='G10'?'selected':''}>G10</option><option ${s.level==='G11'?'selected':''}>G11</option>
+            </select>
+            <button class="bsm" onclick="approve('${d.id}')">다음 허용</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  });
+}
+window.updLv=async(sid,lv)=>await updateDoc(doc(db,'teachers',U.uid,'students',sid),{level:lv});
+window.approve=async sid=>await updateDoc(doc(db,'teachers',U.uid,'students',sid),{approved:true,approvedAt:new Date().toISOString()});
+
+// Records tab
+async function renderTR(){
+  const el=document.getElementById('tR');
+  el.innerHTML=`<p class="slbl">학습 기록</p><div id="rList"><div class="empty">로딩 중...</div></div>`;
+  const q=query(collection(db,'teachers',U.uid,'submissions'),orderBy('submittedAt','desc'));
+  onSnapshot(q,snap=>{
+    document.getElementById('rBadge').textContent=snap.size?`(${snap.size})`:'';
+    const el2=document.getElementById('rList');
+    if(snap.empty){el2.innerHTML='<div class="empty"><p style="font-size:36px;margin-bottom:10px">📋</p><p>아직 제출된 학습 기록이 없습니다</p></div>';return}
+    el2.innerHTML=snap.docs.map((d,i)=>{
+      const r=d.data();
+      return `<div class="rc" onclick="tr('rb${i}','rc${i}')">
+        <div class="fl ic jb">
+          <div class="fl ic g12">
+            <div style="width:34px;height:34px;border-radius:50%;background:var(--ink);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500">${(r.studentName||'?').charAt(0)}</div>
+            <div><p style="font-size:14px;font-weight:500">${r.studentName||r.studentEmail}</p><p style="font-size:12px;color:var(--dimmed)">${r.submittedAt?.split('T')[0]||''} · ${r.type}</p></div>
+          </div>
+          <span style="font-size:12px;color:var(--dimmed)" id="rc${i}">▼</span>
+        </div>
+        <div class="rb" id="rb${i}">
+          <div class="rlbl">질문</div>
+          <p style="font-size:13px;line-height:1.6;margin-bottom:8px">${r.question}</p>
+          <div class="rlbl">학생 답변</div>
+          <div class="rans" style="margin-bottom:8px">${r.answer}</div>
+          ${r.feedback?`<div class="rlbl">AI 피드백</div><div class="rfb">${r.feedback.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  });
+}
+window.tr=(bi,ci)=>{const b=document.getElementById(bi),c=document.getElementById(ci),o=b.classList.toggle('open');c.textContent=o?'▲':'▼'};
+
+// ═══════════════════════════════════════════
+// STUDENT
+// ═══════════════════════════════════════════
+async function loadStudent(){
+  const nm=UD.displayName||U.email.split('@')[0];
+  document.getElementById('sNm').textContent=nm;
+  document.getElementById('sAv').textContent=nm.charAt(0).toUpperCase();
+  TID=UD.teacherUid;
+  if(!TID){show('sStudent');stNA();return}
+  // Register under teacher
+  await setDoc(doc(db,'teachers',TID,'students',U.uid),{
+    email:U.email,name:nm,level:UD.level||'G9',registeredAt:new Date().toISOString(),approved:true
+  },{merge:true});
+  // Load active article
+  const q=query(collection(db,'teachers',TID,'articles'),where('active','==',true));
+  const snap=await getDocs(q);
+  if(snap.empty){show('sStudent');stNA();return}
+  ART={id:snap.docs[0].id,...snap.docs[0].data()};
+  CUR=ART.curriculum;
+  document.getElementById('sBadge').textContent=ART.level||'G9';
+  show('sStudent');
+  rSRead();rSVocab();rSSAT();rSThink();rSChunk();rSWrite();
+  stShow('sR');
+}
+function stNA(){document.getElementById('sNA').style.display='';['sR','sV','sSAT','sTH','sCH','sW'].forEach(id=>document.getElementById(id).style.display='none')}
+window.st=(btn,id)=>{document.querySelectorAll('#sStudent .tb-tab').forEach(t=>t.classList.remove('on'));btn.classList.add('on');stShow(id)};
+function stShow(id){['sR','sV','sSAT','sTH','sCH','sW','sNA'].forEach(s=>document.getElementById(s).style.display=s===id?'':'none')}
+
+function rSRead(){
+  document.getElementById('sR').innerHTML=`
+    <div class="art-body">
+      <div class="fl g8 ic" style="margin-bottom:16px">
+        <span class="tag tn">${ART.source||'Article'}</span>
+        <span class="tag tg">${ART.level||'G9'}</span>
+      </div>
+      <h1 class="art-title">${CUR.article_title}</h1>
+      ${ART.text.split('\n\n').filter(Boolean).map(p=>`<p class="art-para">${p}</p>`).join('')}
+      <div class="art-sum"><strong>요약</strong><p>${CUR.article_summary}</p></div>
+    </div>`
+}
+
+function rSVocab(){
+  const vocab=CUR.vocabulary||[];
+  document.getElementById('sV').innerHTML=`
+    <p style="font-size:13px;color:var(--muted);margin-bottom:18px">문맥 단서로 뜻을 먼저 추론한 뒤 확인하세요.</p>
+    ${vocab.map((v,i)=>`
+      <div class="vc">
+        <div class="fl g12 ic" style="margin-bottom:8px">
+          <div class="vnum">${i+1}</div><span class="vword">${v.word}</span>
+        </div>
+        <p class="vsent">"${v.original_sentence}"</p>
+        <p class="vhint">💡 ${v.context_clue_prompt}</p>
+        <div class="fl g8" style="margin-bottom:8px">
+          <button class="bsm" id="vfb${i}" onclick="tvf(${i})">정의 보기</button>
+          <button class="bsm" id="vqb${i}" onclick="tvq(${i})">SAT 문제 →</button>
+        </div>
+        <div id="vfd${i}" style="display:none;padding:12px;background:var(--goldpale);border-radius:8px;font-size:14px;margin-bottom:8px">${v.definition}</div>
+        <div id="vqs${i}" style="display:none">
+          <p class="qst">${v.question.stem} <strong>${v.word}</strong></p>
+          ${v.question.choices.map((c,ci)=>`<div class="qch" id="vch${i}_${ci}" onclick="svc(${i},${ci},'${v.question.answer}')">${c}</div>`).join('')}
+          <div id="vxp${i}" style="display:none" class="qex"><strong>정답: ${v.question.answer}</strong><br>${v.question.explanation}</div>
+        </div>
+      </div>`).join('')}`;
+}
+window.tvf=i=>{const d=document.getElementById(`vfd${i}`),b=document.getElementById(`vfb${i}`),o=d.style.display==='none';d.style.display=o?'':'none';b.classList.toggle('on',o);b.textContent=o?'정의 숨기기':'정의 보기'};
+window.tvq=i=>{const d=document.getElementById(`vqs${i}`),b=document.getElementById(`vqb${i}`),o=d.style.display==='none';d.style.display=o?'':'none';b.textContent=o?'문제 닫기':'SAT 문제 →'};
+window.svc=(i,ci,ans)=>{
+  const letter=CUR.vocabulary[i].question.choices[ci].charAt(0);
+  CUR.vocabulary[i].question.choices.forEach((_,j)=>{const el=document.getElementById(`vch${i}_${j}`);el.className='qch';if(j===ci)el.className+=letter===ans?' ok':' no'});
+  document.getElementById(`vxp${i}`).style.display='';
+};
+
+function rSSAT(){
+  const qs=CUR.sat_questions||[];
+  const tc={'Main Purpose':'mp','Text Structure':'ts2','Tone':'to','Command of Evidence':'ce'};
+  document.getElementById('sSAT').innerHTML=`
+    <p style="font-size:13px;color:var(--muted);margin-bottom:18px">SAT 유형별 문항. 정답 확인 후 오답 유형까지 분석하세요.</p>
+    ${qs.map((q,i)=>`
+      <div class="sc">
+        <span class="stype ${tc[q.type]||''}">${q.type}</span>
+        <p class="sstem">${q.stem}</p>
+        ${q.choices.map((c,ci)=>`<div class="qch" id="sc${i}_${ci}" onclick="ssc(${i},${ci},'${q.answer}')">${c}</div>`).join('')}
+        <div id="sxp${i}" style="display:none">
+          <div class="qex" style="margin-top:8px"><strong>정답: ${q.answer}</strong><br>${q.explanation}</div>
+          <button class="bsm" style="margin-top:8px" onclick="twt(${i})">오답 유형 분석 →</button>
+          <div id="swt${i}" style="display:none" class="wt">
+            <div class="wp2"><strong style="color:#d97706">Too Narrow (부분적 정답)</strong><p>${q.wrong_answer_types?.too_narrow||''}</p></div>
+            <div class="wp2"><strong style="color:#4f46e5">Too Broad (범위 초과)</strong><p>${q.wrong_answer_types?.too_broad||''}</p></div>
+            <div class="wp2"><strong style="color:#db2777">Distortion (왜곡)</strong><p>${q.wrong_answer_types?.distortion||''}</p></div>
+          </div>
+        </div>
+      </div>`).join('')}`;
+}
+window.ssc=(i,ci,ans)=>{
+  const letter=CUR.sat_questions[i].choices[ci].charAt(0);
+  CUR.sat_questions[i].choices.forEach((_,j)=>{const el=document.getElementById(`sc${i}_${j}`);el.className='qch';if(j===ci)el.className+=letter===ans?' ok':' no'});
+  document.getElementById(`sxp${i}`).style.display='';
+};
+window.twt=i=>{const d=document.getElementById(`swt${i}`);d.style.display=d.style.display==='none'?'':'none'};
+
+function rSThink(){
+  const qs=CUR.critical_thinking||[];
+  document.getElementById('sTH').innerHTML=`
+    <p style="font-size:13px;color:var(--muted);margin-bottom:18px">소크라테스식 질문. 루브릭 기반 AI 피드백을 받습니다. 교사에게 기록됩니다.</p>
+    ${qs.map((q,i)=>`
+      <div class="tc2">
+        <div class="fl g12 ic" style="margin-bottom:12px">
+          <div class="tqn">Q${i+1}</div><p class="tq">${q.question}</p>
+        </div>
+        <textarea id="tta${i}" rows="4" placeholder="여기에 답변을 작성하세요..." style="font-size:13px;margin-bottom:10px"></textarea>
+        <div class="fl jb ic">
+          <span style="font-size:11px;color:var(--dimmed)">교사에게 기록됩니다</span>
+          <button class="bg" id="ttb${i}" onclick="subT(${i})">AI 피드백 받기 →</button>
+        </div>
+        <div id="tfb${i}" style="display:none" class="tfb">
+          <strong>AI 피드백 (루브릭 기반)</strong>
+          <p id="tft${i}"></p>
+        </div>
+      </div>`).join('')}`;
+}
+window.subT=async i=>{
+  const ans=document.getElementById(`tta${i}`).value.trim();
+  if(!ans)return;
+  const q=CUR.critical_thinking[i];
+  const btn=document.getElementById(`ttb${i}`);
+  btn.disabled=true;btn.innerHTML='<span class="sp"></span>';
+  try{
+    const rub=q.rubric?`\nRubric:\n- Excellent: ${q.rubric.excellent}\n- Adequate: ${q.rubric.adequate}\n- Needs Work: ${q.rubric.needs_work}`:'';
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json','x-api-key':'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','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,system:FSYS,
+        messages:[{role:'user',content:`Question: ${q.question}${rub}\n\nStudent Answer: ${ans}`}]})
+    });
+    const d=await res.json();
+    const fb=(d.content||[]).filter(b=>b&&b.type==='text').map(b=>b.text).join('');
+    document.getElementById(`tft${i}`).innerHTML=fb.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+    document.getElementById(`tfb${i}`).style.display='';
+    btn.classList.add('done');btn.textContent='제출 완료 ✓';
+    const nm=UD.displayName||U.email.split('@')[0];
+    await addDoc(collection(db,'teachers',TID,'submissions'),{
+      studentUid:U.uid,studentEmail:U.email,studentName:nm,
+      articleId:ART.id,articleTitle:CUR.article_title,
+      type:'Critical Thinking',question:q.question,answer:ans,feedback:fb,
+      submittedAt:new Date().toISOString()
+    });
+  }catch(e){
+    document.getElementById(`tft${i}`).textContent='피드백 생성 중 오류가 발생했습니다.';
+    document.getElementById(`tfb${i}`).style.display='';
+    btn.disabled=false;btn.textContent='다시 시도';
+  }
+};
+
+function rSChunk(){
+  const chunks=CUR.chunk_reading||[];
+  if(!chunks.length){document.getElementById('sCH').innerHTML='<div class="empty"><p>직독직해 자료가 없습니다</p></div>';return}
+  document.getElementById('sCH').innerHTML=`
+    <p style="font-size:13px;color:var(--muted);margin-bottom:18px">영어 어순 그대로 의미 단위로 끊어 읽는 연습입니다.</p>
+    ${chunks.map(para=>`
+      <div class="cp">
+        <p class="clbl">Paragraph ${para.paragraph_number}</p>
+        ${(para.chunks||[]).map(ch=>`
+          <div class="crow">
+            <div><p class="cen">${ch.english}</p>${ch.grammar_note?`<p class="cnote">${ch.grammar_note}</p>`:''}</div>
+            <p class="cko">${ch.korean}</p>
+          </div>`).join('')}
+      </div>`).join('')}`;
+}
+
+function rSWrite(){
+  const wp=CUR.writing_prompt;
+  if(!wp){document.getElementById('sW').innerHTML='<div class="empty"><p>Writing 자료가 없습니다</p></div>';return}
+  document.getElementById('sW').innerHTML=`
+    <div class="wp3">
+      <h2 class="wtopic">${wp.topic}</h2>
+      <div class="wpos">
+        <div class="wpc for"><span class="wpl">주장 (Argue For)</span><p class="wpt">${wp.position_to_argue}</p></div>
+        <div class="wpc ag"><span class="wpl">반론 (Counter)</span><p class="wpt">${wp.counter_position}</p></div>
+      </div>
+      ${wp.rubric?`<div style="padding:12px 16px;background:var(--cream2);border-radius:8px;margin-bottom:16px;border:1px solid var(--sand)">
+        <p style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">채점 기준</p>
+        <p style="font-size:12px;line-height:1.7"><strong>논지:</strong> ${wp.rubric.thesis}</p>
+        <p style="font-size:12px;line-height:1.7;margin-top:4px"><strong>근거:</strong> ${wp.rubric.evidence}</p>
+        <p style="font-size:12px;line-height:1.7;margin-top:4px"><strong>구조:</strong> ${wp.rubric.structure}</p>
+      </div>`:''}
+      <textarea id="wta" rows="10" placeholder="에세이 초안을 작성하세요... (최소 100단어 권장)" style="font-size:13px;margin-bottom:10px"></textarea>
+      <div class="fl jb ic">
+        <span style="font-size:12px;color:var(--dimmed)" id="wcnt">0 words</span>
+        <button class="bg" id="wbtn" onclick="subW()">AI 피드백 받기 →</button>
+      </div>
+    </div>
+    <div id="wfb" style="display:none" class="wfb">
+      <strong>AI 피드백 (루브릭 기반)</strong>
+      <p id="wft"></p>
+    </div>`;
+  document.getElementById('wta').addEventListener('input',function(){
+    document.getElementById('wcnt').textContent=this.value.split(/\s+/).filter(Boolean).length+' words';
+  });
+}
+window.subW=async()=>{
+  const ans=document.getElementById('wta').value.trim();
+  if(!ans)return;
+  const wp=CUR.writing_prompt;
+  const btn=document.getElementById('wbtn');
+  btn.disabled=true;btn.innerHTML='<span class="sp"></span>';
+  try{
+    const rub=wp.rubric?`\nRubric:\n- Thesis: ${wp.rubric.thesis}\n- Evidence: ${wp.rubric.evidence}\n- Structure: ${wp.rubric.structure}`:'';
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json','x-api-key':'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','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,system:FSYS,
+        messages:[{role:'user',content:`Writing Topic: ${wp.topic}${rub}\n\nStudent Essay: ${ans}`}]})
+    });
+    const d=await res.json();
+    const fb=(d.content||[]).filter(b=>b&&b.type==='text').map(b=>b.text).join('');
+    document.getElementById('wft').innerHTML=fb.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+    document.getElementById('wfb').style.display='';
+    btn.classList.add('done');btn.textContent='제출 완료 ✓';
+    const nm=UD.displayName||U.email.split('@')[0];
+    await addDoc(collection(db,'teachers',TID,'submissions'),{
+      studentUid:U.uid,studentEmail:U.email,studentName:nm,
+      articleId:ART.id,articleTitle:CUR.article_title,
+      type:'Writing Essay',question:wp.topic,answer:ans,feedback:fb,
+      submittedAt:new Date().toISOString()
+    });
+  }catch(e){
+    document.getElementById('wft').textContent='피드백 생성 중 오류가 발생했습니다.';
+    document.getElementById('wfb').style.display='';
+    btn.disabled=false;btn.textContent='다시 시도';
+  }
+};
+
+show('sLogin');
+</script>
+</body>
+</html>
